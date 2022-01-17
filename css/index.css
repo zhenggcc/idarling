@@ -1,0 +1,122 @@
+/*头部*/
+div.headerDiv{
+	width: 100%;
+	height: 72px;
+	background-color: #5ee192;
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 1000;
+}
+div.headerDiv div.bgDiv{
+	background: url(../img/header_bg.png) no-repeat #5E8CE1;
+	width: 100%;
+	height: 100%;
+	z-index: -1;
+	position: absolute;
+	opacity: 0.5;
+}
+div.headerDiv div.logoDiv{
+	width: 190px;
+	height: 72px;
+	position: fixed;
+	top: 0;
+	z-index: 1000;
+	text-align: center;
+	line-height: 72px;
+	overflow: hidden;
+}
+div.headerDiv div.logoDiv img{
+	vertical-align: middle;
+}
+div.headerDiv div.divTitle{
+	font-size: 33px;
+	letter-spacing: 10px;
+	line-height: 72px;
+	font-weight: bold;
+	color: #f9fffe;
+	text-align: center;
+	margin: 0 auto;
+	width: 70%;
+	text-shadow: 2px 2px 3px #031d17;
+}
+div.headerDiv ul.userinfor{
+    width: 388px;
+    height: 36px;
+    line-height: 28px;
+    padding: 5px;
+    float: right;
+    border-radius: 5px;
+    background: #d5fff9;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    margin: 15px 13px 0px 0px;
+    list-style: none;
+}
+div.headerDiv ul.userinfor li{
+	float: left;
+    font-size: 14px;
+    margin: 0px 10px;
+    color: #437aa2;
+    position: relative;
+}
+div.headerDiv ul.userinfor li.h-seperate:after{
+	content: "";
+    position: absolute;
+    width: 1px;
+    height: 12px;
+    background: #536192;
+    top: 8px;
+    right: -10px;
+}
+div.headerDiv ul.userinfor li.out-system{
+	width: 25px;
+    height: 25px;
+    border-radius: 25px;
+    background: #437aa2;
+    color: #fff;
+    text-align: center;
+}
+div.headerDiv ul.userinfor li i{
+    font-size: 18px;
+}
+div.headerDiv ul.userinfor li i.aboutus{
+    vertical-align: middle;
+    margin-right: 5px;
+}
+
+/*内容*/
+div.mainDiv{
+	margin: 20px;
+	margin-top: 92px;
+}
+#showTable{
+	border: 1px #d4d4d4 solid;
+}
+div.mainDiv #showTable table{
+	margin-bottom: 0;
+	text-align:center;
+}
+div.mainDiv #showTable table thead{
+	background: #d8f3f9;
+}
+div.mainDiv #showTable table thead tr th:first-child{
+	width:100px;
+}
+div.mainDiv #showTable table thead tr th{
+	text-align:center;
+	border-right: 1px solid #ddd;
+}
+div.mainDiv #showTable table tbody tr td{
+	border-right: 1px solid #ddd;
+}
+
+/*详情页面*/
+#layuiOpen{
+	display: none;
+}
+#line{
+	width: 1000px;
+	height: 500px;
+}
