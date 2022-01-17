@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>主机管理采集器</title>
+    <link rel="shortcut icon" href="img/LOGO_tdhx.ico" type="image/x-icon">
+    <!-- 字体图标库 -->
+    <link rel="stylesheet" href="font/css/font-awesome.min.css">
+    <!-- layui -->
+    <link rel="stylesheet" href="layui/css/layui.css">
+    <!-- 自定义css -->
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <!-- Bootstrap -->
+    <link rel="stylesheet" type="text/css" href="bootstrap-3.3.7-dist/css/bootstrap.min.css" />
+</head>
+<body>
+	<div class="headerDiv">
+		<div class="bgDiv">
+		</div>
+		<div class="logoDiv">
+      <img src="img/logo2.png" />
+		</div>
+		<div class="divTitle">
+			主机管理采集器
+		</div>
+    <ul class="userinfor">
+      <li class="h-seperate"><i id="dbStatus" data-id="dbStatus" class="fa fa-database" title="数据库正常"></i></li>
+      <li class="h-seperate">您好，<span id="main_lblUserName" data-id="main_lblUserName">安全管理员：secadmin</span> <i class="fa fa-user"></i>
+      </li>
+      <li class="out-system h-seperate"><i class="fa fa-sign-out" title="退出系统"></i></li>
+      <li class="licensebtn"><i class="fa fa-list-alt aboutus"></i>关于</li>
+  </ul>
+	</div>
+  <!-- 表格 -->
+  <div class="mainDiv">
+    <div id="showTable">
+        <table class="table table-hover table-striped">
+            <thead>
+                <tr>
+                    <th style="">序号</th>
+                    <th>时间</th>
+                    <th>IP</th>
+                    <th>CPU信息</th>
+                    <th>磁盘信息</th>
+                    <th>内存信息</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+  </div>
+  <!-- 详情页面 -->
+  <div id="layuiOpen">
+    <div id="line"></div>
+  </div>
+</body>
+  <!-- jQuery -->
+  <script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>
+  <!-- bootstrap -->
+  <script type="text/javascript" src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+  <!-- layui -->
+  <script src="layui/layui.js"></script>
+  <!-- echarts -->
+  <script src="echarts/echarts.min.js"></script>
+  <script type="text/javascript">
+    // 仅只需要加载所有的DOM结构
+    $(document).ready(function() {
+      // var result = {
+      //   data_list:[
+      //     {
+      //       cpuState:1,
+      //       diskState:49,
+      //       ip:"1.1.1.1",
+      //       memoryState:56,
+      //       time:"2022-01-13 14:46:18"
+      //     },
+      //     {
+      //       cpuState:1,
+      //       diskState:49,
+      //       ip:"192.168.81.28",
+      //       memoryState:56,
+      //       time:"2022-01-13 16:30:37"
+      //     },
+      //     {
+      //       cpuState:1,
+      //       diskState:49,
+      //       ip:"192.168.81.29",
+      //       memoryState:56,
+      //       time:"2022-01-13 14:34:17"
+      //     }
+      //   ],
+      //   status:1
+      // }
+      var html = "",
+          filter = {
+            page: 1
+          };
+      $.ajax({
+         type: "GET",
+         // url: "/get_current_cpu_usage",
+         url: "http://192.168.81.17:9000/get_current_cpu_usage",
+         // data: "",
+         dataType: "json",
+         success: function(result){
+                    // console.log(result);
+                    result.rows = result.data_list;
+                    if (typeof (result) != "undefined" && typeof (result.rows) != "undefined") {
+                        if (result.rows.length > 0) {
+                          for (var i = 0; i < result.rows.length; i++) {
+                              html += "<tr>";
+                              html += "<td>" + ((filter.page - 1) * 10 + 1 + i) + "</td>";
+                              html += "<td>" + result.rows[i]["time"] + "</td>";
+                              html += "<td>" + result.rows[i]["ip"] + "</td>";
+                              html += "<td>" + result.rows[i]["cpuState"] + "</td>";
+                              html += "<td>" + result.rows[i]["diskState"] + "</td>";
+                              html += "<td>" + result.rows[i]["memoryState"] + "</td>";
+                              html += "<td style='width:15%;'><button style='color: #4667c4;border: 1px #4667c4 solid;' class='btn btn-default btn-xs btn-color-details' data-key='" + result.rows[i]["id"] + "'><i class='fa fa-file-text-o' style='margin-right: 5px;'></i>详情</button>";
+                              html += "</td></tr>";
+                          }
+                        }else {
+                          html += "<tr><td colspan='8'>暂无数据</td></tr>";
+                        }
+                    }else {
+                      html += "<tr><td colspan='8'>暂无数据</td></tr>";
+                    }
+                    $("#showTable table>tbody").html(html);
+                    
+                    // 点击详情按钮
+                    // 定义为全局变量  解决echarts同一元素多次渲染控制台发出警告问题
+                    var myChart;
+                    $("#showTable table>tbody").find("button").on("click", function (event) {
+                        layer.open({
+                            type: 1,
+                            title: "详情",
+                            area: ["1200px", "700px"],
+                            shade: [0.5, '#393D49'],
+                            content:$("#layuiOpen"),
+                            success: function (layero, index) {
+                              // parent.getBlacklistDetails(layero, id,vulType);
+                              // 原生方法
+                              var chartDom = document.getElementById('line');
+                              if (myChart != null && myChart != "" && myChart != undefined) {
+                                myChart.dispose();//销毁
+                              }
+                              myChart = echarts.init(chartDom);
+                              var option;
+
+                              option = {
+                                tooltip: {
+                                    trigger: 'axis',
+                                    confine:true,
+                                    enterable:true,
+                                    textStyle:{
+                                      fontSize:13
+                                    }
+                                },
+                                // legend: {
+                                //     data:data.name,
+                                //     selected:selectedList
+                                // },
+                                grid: {
+                                  top: '20%',
+                                  // left: '3%',
+                                  // right: '4%',
+                                  // bottom: '3%',
+                                  containLabel: true
+                                },
+                                xAxis: {
+                                  type: 'category',
+                                  boundaryGap: false,
+                                  axisTick: {
+                                    show: false
+                                  },
+                                  axisLabel: {
+                                    show: true,
+                                    // rotate: "-30"
+                                  },
+                                  // data: [
+                                  //   '2022-01-13 08:46:18', '2022-01-13 13:46:18', '2022-01-13 10:46:18', '2022-01-13 15:46:18','2022-01-13 18:46:18', '2022-01-13 21:46:18', '2022-01-13 24:46:18'
+                                  // ],
+                                  // data: [
+                                  //   '08:46:18', '13:46:18', '10:46:18', '15:46:18','18:46:18', '21:46:18', '24:46:18'
+                                  // ],
+                                  data: [
+                                    '08:46:18', '10:46:18', '15:46:18','17:46:18', '24:46:18'
+                                  ]
+                                },
+                                yAxis: {
+                                  type: 'value',
+                                  name: '数量'
+                                },
+                                series: [
+                                  {
+                                    // data: [15, 23, 8, 28, 15, 47, 26],
+                                    data: [15, 23, 8, 28, 15],
+                                    type: 'line'
+                                  }
+                                ]
+                              };
+                              option && myChart.setOption(option);
+                            }
+                        });
+                    });
+            }
+      });
+    });
+  </script>
+</html>
